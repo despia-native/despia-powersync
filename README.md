@@ -11,6 +11,7 @@ Add a fast, offline-first **native local database** to your Despia app, then kee
 
 - Despia runtime overview: [Despia docs](https://setup.despia.com/introduction)
 - Despia native features SDK: [`despia-native` on npm](https://www.npmjs.com/package/despia-native)
+- GitHub project: [`despia-native/despia-powersync`](https://github.com/despia-native/despia-powersync)
 
 ---
 
@@ -29,7 +30,7 @@ Despia apps run your existing web app inside a native Swift (iOS) and Kotlin (An
 
 ## Store compliant
 
-Despia’s Local Server downloads and caches web content (HTML, CSS, JavaScript) for offline display in a WebView, the same way browsers cache pages. No native code or executables are downloaded. Learn more about the Despia runtime model in the [Despia docs](https://setup.despia.com/introduction).
+Despia's Local Server downloads and caches web content (HTML, CSS, JavaScript) for offline display in a WebView, the same way browsers cache pages. No native code or executables are downloaded. Learn more about the Despia runtime model in the [Despia docs](https://setup.despia.com/introduction).
 
 ---
 
@@ -95,17 +96,17 @@ import { db } from "@despia/powersync";
 
 ### ESM via CDN (jsDelivr)
 
-```html
-<script type="module">
-  // Recommended (CDN rewrites dependencies for ESM)
-  import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
+Use a **module script** in your HTML, then:
 
-  // Or direct file (same package build output)
-  // import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/dist/esm/index.mjs";
+```js
+// Recommended (+esm rewrites dependencies for browsers)
+import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
 
-  const rows = await db.query("SELECT 1");
-  console.log(rows);
-</script>
+// Or direct file (same build as npm dist/esm/index.mjs)
+// import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/dist/esm/index.mjs";
+
+const rows = await db.query("SELECT 1");
+console.log(rows);
 ```
 
 ### CommonJS
@@ -114,24 +115,23 @@ import { db } from "@despia/powersync";
 const { db } = require("@despia/powersync");
 ```
 
-### Script tag (UMD via CDN)
+### UMD via CDN (global)
 
-```html
-<script src="https://cdn.jsdelivr.net/npm/@despia/powersync/dist/umd/despia-powersync.min.js"></script>
-<script>
-  // window.DespiaPowerSync.{ db, Database, onEvent }
-  const { db } = window.DespiaPowerSync;
-</script>
+Load the bundle URL in a regular (non-module) script tag, then use the global:
+
+**Bundle:** `https://cdn.jsdelivr.net/npm/@despia/powersync/dist/umd/despia-powersync.min.js`
+
+```js
+// window.DespiaPowerSync exposes { db, Database, onEvent }
+const { db } = window.DespiaPowerSync;
 ```
 
-### Script tag (ESM via CDN)
+### ESM snippet (same CDN as above)
 
-```html
-<script type="module">
-  import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
-  const rows = await db.query("SELECT 1");
-  console.log(rows);
-</script>
+```js
+import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
+const rows = await db.query("SELECT 1");
+console.log(rows);
 ```
 
 ---

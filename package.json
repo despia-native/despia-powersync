@@ -1,12 +1,12 @@
 {
   "name": "@despia/powersync",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Despia Native SDK for offline-first local SQLite + real-time PowerSync sync in web-native apps",
   "author": "Despia",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/despia-native/despia-powersync"
+    "url": "git+https://github.com/despia-native/despia-powersync.git"
   },
   "homepage": "https://github.com/despia-native/despia-powersync#readme",
   "bugs": {
@@ -74,4 +74,3 @@
     "typescript": "^5.4.0"
   }
 }
-
