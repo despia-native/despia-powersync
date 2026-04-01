@@ -3,85 +3,80 @@
 > **Despia V4 only (beta).** Most Despia apps are still running on **Despia V3**.  
 > To join the V4 beta, email `beta@despia.com`.
 
-## Despia PowerSync SDK
+Despia PowerSync SDK.
 
-Native **local SQLite database + sync** for [Despia](https://despia.com) apps.
+Add a fast, offline-first **native local database** to your Despia app, then keep it in real time sync with your backend through [PowerSync](https://powersync.com/), using a simple JavaScript API.
 
-`@despia/powersync` gives your Despia app a fast, offline-first local database and a simple API to keep it in sync with your backend through PowerSync.
+- Powered by **PowerSync**: a production-proven sync engine for offline-first apps.
 
-Your web app (React/Vue/Angular/Svelte/vanilla JS) runs inside Despia’s native Swift (iOS) and Kotlin (Android) runtime, and this SDK bridges to the native database + sync engine via JSON messaging.
+- Despia runtime overview: [Despia docs](https://setup.despia.com/introduction)
+- Despia native features SDK: [`despia-native` on npm](https://www.npmjs.com/package/despia-native)
 
-- **Learn about the Despia runtime**: `https://setup.despia.com/introduction` ([Despia docs](https://setup.despia.com/introduction))
-- **Other native features (Despia JavaScript SDK)**: `https://www.npmjs.com/package/despia-native`
+---
 
-## Deployment models
+## Why this exists
 
-- **Remote Hydration (default)**: the native container loads your web app from your hosting URL on launch.
-- **Local Server (optional)**: Despia downloads your web build to the device and serves it from an on-device HTTP server at `http://localhost` for instant boot and full offline operation (via `@despia/local`).
+Despia apps run your existing web app inside a native Swift (iOS) and Kotlin (Android) runtime. This package bridges your web code to a native SQLite database plus sync engine, so your app stays instant and usable even when the network is unreliable.
 
-`@despia/powersync` works in **both** models (including apps running on the Local Server).
+## Features
+
+- **Local-first SQLite**: query and write instantly, even offline.
+- **Sync lifecycle API**: configure, connect, trigger sync, read sync status.
+- **Live queries**: subscribe to result sets via `watch()`.
+- **Framework-agnostic**: works with React / Vue / Angular / Svelte / vanilla JS.
+- **Works with Despia Local Server**: compatible with both Remote Hydration and `http://localhost`.
+
+## Store compliant
+
+Despia’s Local Server downloads and caches web content (HTML, CSS, JavaScript) for offline display in a WebView, the same way browsers cache pages. No native code or executables are downloaded. Learn more about the Despia runtime model in the [Despia docs](https://setup.despia.com/introduction).
 
 ---
 
 ## Quick start
 
-**Install:**
+Install:
 
 ```bash
 npm i @despia/powersync
 ```
 
-**Use it (local DB):**
+Query your local DB:
 
 ```ts
 import { db } from "@despia/powersync";
 
-type UserRow = { id: number; email: string };
-const users = await db.query<UserRow>("SELECT id, email FROM users");
+type User = { id: number; email: string };
+const users = await db.query<User>("SELECT id, email FROM users");
 ```
 
-**Connect sync (PowerSync):**
+Connect sync:
 
 ```ts
 import { db } from "@despia/powersync";
 
 await db.connect({
   fetchToken: async () => {
-    // fetch a JWT from your backend
+    // return a JWT from your backend
     return "YOUR_JWT";
   },
   url: "https://YOUR_POWERSYNC_INSTANCE",
   appId: "YOUR_APP_ID",
 });
+```
 
-// optional: trigger sync + observe status
+Trigger sync + read status:
+
+```ts
 await db.sync();
 const status = await db.syncStatus();
 console.log(status);
 ```
 
-**Note:** This SDK only works inside the Despia runtime (native bridge required). In a normal browser, calls will fail.
-
 ---
 
-## Web apps vs React Native
+## Runtime requirements
 
-**This SDK is for:**
-
-- React web apps (Next.js, Vite, CRA, etc.)
-- Vue / Angular / Svelte web apps
-- Vanilla JavaScript web apps
-
-**This SDK is NOT for:**
-
-- React Native / Expo apps
-- Native iOS/Android development
-
----
-
-## Environment detection
-
-Gate calls on runtime detection:
+This package only works inside the **Despia runtime** (native bridge required). In a regular browser it will throw.
 
 ```ts
 export const isDespia = () => navigator.userAgent.includes("despia");
@@ -89,25 +84,27 @@ export const isDespia = () => navigator.userAgent.includes("despia");
 
 ---
 
-## Exports
-
-- `db` (singleton)
-- `Database` (class)
-- `onEvent(event, handler)` (subscribe to native events)
-
----
-
 ## Usage
 
-### ESM
+### ESM (recommended)
 
 ```ts
 import { db } from "@despia/powersync";
+```
 
-const rows = await db.query<{ id: number; name: string }>(
-  "SELECT id, name FROM users WHERE id = ?",
-  [1]
-);
+### ESM via CDN (jsDelivr)
+
+```html
+<script type="module">
+  // Recommended (CDN rewrites dependencies for ESM)
+  import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
+
+  // Or direct file (same package build output)
+  // import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/dist/esm/index.mjs";
+
+  const rows = await db.query("SELECT 1");
+  console.log(rows);
+</script>
 ```
 
 ### CommonJS
@@ -116,19 +113,7 @@ const rows = await db.query<{ id: number; name: string }>(
 const { db } = require("@despia/powersync");
 ```
 
-### setup.despia.com / local ESM path
-
-If you serve the file as `/despia/powersync.js` (built at `dist/esm/powersync.js`), you can import it as a module:
-
-```html
-<script type="module">
-  import { db } from "/despia/powersync.js";
-  const rows = await db.query("SELECT 1");
-  console.log(rows);
-</script>
-```
-
-### Script tag / CDN
+### Script tag (UMD via CDN)
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@despia/powersync/dist/umd/despia-powersync.min.js"></script>
@@ -138,22 +123,21 @@ If you serve the file as `/despia/powersync.js` (built at `dist/esm/powersync.js
 </script>
 ```
 
----
+### Script tag (ESM via CDN)
 
-## API quickstart
-
-### Query / get (typed)
-
-```ts
-import { db } from "@despia/powersync";
-
-type UserRow = { id: number; email: string };
-
-const users = await db.query<UserRow>("SELECT id, email FROM users");
-const first = await db.get<UserRow>("SELECT id, email FROM users LIMIT 1");
+```html
+<script type="module">
+  import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
+  const rows = await db.query("SELECT 1");
+  console.log(rows);
+</script>
 ```
 
-### Execute / batch / transaction
+---
+
+## Common patterns
+
+### Write data (execute / batch / transaction)
 
 ```ts
 import { db } from "@despia/powersync";
@@ -170,7 +154,7 @@ await db.transaction(async (tx) => {
 });
 ```
 
-### watch() (live updates from native)
+### Live query (watch)
 
 ```ts
 import { db } from "@despia/powersync";
@@ -178,223 +162,95 @@ import { db } from "@despia/powersync";
 type Todo = { id: number; title: string; done: 0 | 1 };
 
 const unwatch = db.watch<Todo>("SELECT id, title, done FROM todos", (rows) => {
-  console.log("todos changed:", rows);
+  console.log("todos:", rows);
 });
 
 // later:
 unwatch();
 ```
 
-### PowerSync connect / status
-
-```ts
-import { db } from "@despia/powersync";
-
-await db.connect({
-  fetchToken: async () => {
-    // fetch a JWT from your backend
-    return "YOUR_JWT";
-  },
-  url: "https://YOUR_POWERSYNC_INSTANCE",
-  appId: "YOUR_APP_ID",
-});
-
-const status = await db.syncStatus();
-console.log(status.connected, status.lastSynced);
-```
-
 ---
 
-## Full API specification
+## API reference
 
-### Package exports
+### Exports
 
-```ts
-import { db, Database, onEvent } from "@despia/powersync";
-import type {
-  ExecuteResult,
-  BatchStatement,
-  BatchResult,
-  SyncStatus,
-  PowerSyncConfig,
-  ConnectOptions,
-} from "@despia/powersync";
-```
+- `db`: singleton `Database`
+- `Database`: class
+- `onEvent(event, callback)`: subscribe to native events
 
-- `**db: Database**`: singleton instance
-- `**Database**`: class (create your own instance if you want)
-- `**onEvent<T>(event: string, callback: (payload: T) => void): () => void**`: subscribe to native events
-
-### `Database` class
-
-#### `query<T>()`
+### Types
 
 ```ts
-query<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  params?: unknown[]
-): Promise<T[]>;
-```
+export type ExecuteResult = { rowsAffected: number; insertId?: number };
+export type BatchStatement = { sql: string; params?: unknown[] };
+export type BatchResult = { results: ExecuteResult[] };
 
-- **Behavior**: runs a SQL query and returns `rows` (defaults to `[]` if missing).
-
-#### `get<T>()`
-
-```ts
-get<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  params?: unknown[]
-): Promise<T | null>;
-```
-
-- **Behavior**: returns the first row or `null`.
-
-#### `execute()`
-
-```ts
-execute(sql: string, params?: unknown[]): Promise<ExecuteResult>;
-```
-
-`ExecuteResult`:
-
-```ts
-type ExecuteResult = {
-  rowsAffected: number;
-  insertId?: number;
-};
-```
-
-#### `batch()`
-
-```ts
-batch(statements: BatchStatement[]): Promise<BatchResult>;
-```
-
-`BatchStatement` / `BatchResult`:
-
-```ts
-type BatchStatement = { sql: string; params?: unknown[] };
-type BatchResult = { results: ExecuteResult[] };
-```
-
-#### `transaction()`
-
-```ts
-transaction<T>(fn: (db: Database) => Promise<T>): Promise<T>;
-```
-
-- **Behavior**: begins a transaction, runs `fn(this)`, commits on success, rolls back on error, and re-throws.
-
-#### `watch<T>()`
-
-```ts
-watch<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  callback: (rows: T[]) => void
-): () => void;
-
-watch<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  params: unknown[],
-  callback: (rows: T[]) => void
-): () => void;
-```
-
-- **Behavior**:
-  - registers a native watch and calls `callback(rows)` whenever the native layer emits `watch:<watchId>`
-  - returns an unsubscribe function that also sends `unwatch`
-- **Events used**: `watch:<watchId>` (payload is `rows`)
-
-#### `migrate()`
-
-```ts
-migrate(version: number, statements: BatchStatement[]): Promise<Record<string, unknown>>;
-```
-
-#### `syncStatus()`
-
-```ts
-syncStatus(): Promise<SyncStatus>;
-```
-
-`SyncStatus`:
-
-```ts
-type SyncStatus = {
+export type SyncStatus = {
   connected: boolean;
   lastSynced: string | null;
   uploading: boolean;
   downloading: boolean;
 };
-```
 
-#### `sync()`
-
-```ts
-sync(): Promise<Record<string, unknown>>;
-```
-
-- **Behavior**: triggers a sync cycle in the native layer.
-
-#### `onSyncChange()`
-
-```ts
-onSyncChange(callback: (status: SyncStatus) => void): () => void;
-```
-
-- **Event used**: `sync:status` (payload is `SyncStatus`)
-
-#### `configurePowerSync()`
-
-```ts
-configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>>;
-```
-
-`PowerSyncConfig`:
-
-```ts
-type PowerSyncConfig = {
+export type PowerSyncConfig = {
   url?: string;
   token: string;
   appId?: string;
   uploadDebounce?: number;
 };
-```
 
-#### `connect()`
-
-```ts
-connect(options?: Partial<ConnectOptions>): Promise<void>;
-```
-
-`ConnectOptions`:
-
-```ts
-type ConnectOptions = {
+export type ConnectOptions = {
   fetchToken: () => Promise<string>;
   url?: string;
   appId?: string;
 };
 ```
 
-- **Behavior**:
-  - requires `fetchToken`
-  - fetches a token and calls `configurePowerSync({ url, appId, token })`
-  - subscribes to `sync:token_needed` and refreshes the token when requested by native
-
-#### `disconnect()`
+### `Database` methods (signatures)
 
 ```ts
-disconnect(): Promise<Record<string, unknown>>;
-```
+query<T extends Record<string, unknown> = Record<string, unknown>>(
+  sql: string,
+  params?: unknown[]
+): Promise<T[]>;
 
-- **Behavior**: unsubscribes from token refresh and tells native to disconnect.
+get<T extends Record<string, unknown> = Record<string, unknown>>(
+  sql: string,
+  params?: unknown[]
+): Promise<T | null>;
+
+execute(sql: string, params?: unknown[]): Promise<ExecuteResult>;
+batch(statements: BatchStatement[]): Promise<BatchResult>;
+
+transaction<T>(fn: (db: Database) => Promise<T>): Promise<T>;
+
+watch<T extends Record<string, unknown> = Record<string, unknown>>(
+  sql: string,
+  callback: (rows: T[]) => void
+): () => void;
+watch<T extends Record<string, unknown> = Record<string, unknown>>(
+  sql: string,
+  params: unknown[],
+  callback: (rows: T[]) => void
+): () => void;
+
+migrate(version: number, statements: BatchStatement[]): Promise<Record<string, unknown>>;
+
+configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>>;
+connect(options?: Partial<ConnectOptions>): Promise<void>;
+disconnect(): Promise<Record<string, unknown>>;
+
+sync(): Promise<Record<string, unknown>>;
+syncStatus(): Promise<SyncStatus>;
+onSyncChange(callback: (status: SyncStatus) => void): () => void;
+```
 
 ### Events
 
 Subscribe with `onEvent(event, callback)`:
 
-- `**sync:status`** → payload: `SyncStatus`
-- `**sync:token_needed**` → payload: `unknown` (token refresh is handled internally by `connect()`)
-- `**watch:<watchId>**` → payload: `unknown` (rows array; typed via `watch<T>()`)
+- `sync:status` → `SyncStatus`
+- `sync:token_needed` → `unknown` (handled internally by `connect()`)
+- `watch:<watchId>` → rows payload (typed via `watch<T>()`)
 
