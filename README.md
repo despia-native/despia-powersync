@@ -23,6 +23,7 @@ Despia apps run your existing web app inside a native Swift (iOS) and Kotlin (An
 - **Local-first SQLite**: query and write instantly, even offline.
 - **Sync lifecycle API**: configure, connect, trigger sync, read sync status.
 - **Live queries**: subscribe to result sets via `watch()`.
+- **TypeScript-first**: built-in types, strict API, works great in modern web tooling.
 - **Framework-agnostic**: works with React / Vue / Angular / Svelte / vanilla JS.
 - **Works with Despia Local Server**: compatible with both Remote Hydration and `http://localhost`.
 
