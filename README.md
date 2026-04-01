@@ -1,4 +1,4 @@
-# @despia-native/powersync
+# @despia/powersync
 
 > **Despia V4 only (beta).** Most Despia apps are still running on **Despia V3**.  
 > To join the V4 beta, email `beta@despia.com`.
@@ -7,11 +7,10 @@
 
 Native **local SQLite database + sync** for [Despia](https://despia.com) apps.
 
-`@despia-native/powersync` gives your Despia app a fast, offline-first local database and a simple API to keep it in sync with your backend through PowerSync.
+`@despia/powersync` gives your Despia app a fast, offline-first local database and a simple API to keep it in sync with your backend through PowerSync.
 
 Your web app (React/Vue/Angular/Svelte/vanilla JS) runs inside Despia’s native Swift (iOS) and Kotlin (Android) runtime, and this SDK bridges to the native database + sync engine via JSON messaging.
 
-- **Docs for this package**: this README
 - **Learn about the Despia runtime**: `https://setup.despia.com/introduction` ([Despia docs](https://setup.despia.com/introduction))
 - **Other native features (Despia JavaScript SDK)**: `https://www.npmjs.com/package/despia-native`
 
@@ -20,7 +19,7 @@ Your web app (React/Vue/Angular/Svelte/vanilla JS) runs inside Despia’s native
 - **Remote Hydration (default)**: the native container loads your web app from your hosting URL on launch.
 - **Local Server (optional)**: Despia downloads your web build to the device and serves it from an on-device HTTP server at `http://localhost` for instant boot and full offline operation (via `@despia/local`).
 
-`@despia-native/powersync` works in **both** models (including apps running on the Local Server).
+`@despia/powersync` works in **both** models (including apps running on the Local Server).
 
 ---
 
@@ -29,13 +28,13 @@ Your web app (React/Vue/Angular/Svelte/vanilla JS) runs inside Despia’s native
 **Install:**
 
 ```bash
-npm i @despia-native/powersync
+npm i @despia/powersync
 ```
 
 **Use it (local DB):**
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 type UserRow = { id: number; email: string };
 const users = await db.query<UserRow>("SELECT id, email FROM users");
@@ -44,7 +43,7 @@ const users = await db.query<UserRow>("SELECT id, email FROM users");
 **Connect sync (PowerSync):**
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 await db.connect({
   fetchToken: async () => {
@@ -103,7 +102,7 @@ export const isDespia = () => navigator.userAgent.includes("despia");
 ### ESM
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 const rows = await db.query<{ id: number; name: string }>(
   "SELECT id, name FROM users WHERE id = ?",
@@ -114,7 +113,7 @@ const rows = await db.query<{ id: number; name: string }>(
 ### CommonJS
 
 ```js
-const { db } = require("@despia-native/powersync");
+const { db } = require("@despia/powersync");
 ```
 
 ### setup.despia.com / local ESM path
@@ -132,7 +131,7 @@ If you serve the file as `/despia/powersync.js` (built at `dist/esm/powersync.js
 ### Script tag / CDN
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@despia-native/powersync/dist/umd/despia-powersync.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@despia/powersync/dist/umd/despia-powersync.min.js"></script>
 <script>
   // window.DespiaPowerSync.{ db, Database, onEvent }
   const { db } = window.DespiaPowerSync;
@@ -146,7 +145,7 @@ If you serve the file as `/despia/powersync.js` (built at `dist/esm/powersync.js
 ### Query / get (typed)
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 type UserRow = { id: number; email: string };
 
@@ -157,7 +156,7 @@ const first = await db.get<UserRow>("SELECT id, email FROM users LIMIT 1");
 ### Execute / batch / transaction
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 await db.execute("INSERT INTO users(email) VALUES(?)", ["a@b.com"]);
 
@@ -174,7 +173,7 @@ await db.transaction(async (tx) => {
 ### watch() (live updates from native)
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 type Todo = { id: number; title: string; done: 0 | 1 };
 
@@ -189,7 +188,7 @@ unwatch();
 ### PowerSync connect / status
 
 ```ts
-import { db } from "@despia-native/powersync";
+import { db } from "@despia/powersync";
 
 await db.connect({
   fetchToken: async () => {
@@ -211,7 +210,7 @@ console.log(status.connected, status.lastSynced);
 ### Package exports
 
 ```ts
-import { db, Database, onEvent } from "@despia-native/powersync";
+import { db, Database, onEvent } from "@despia/powersync";
 import type {
   ExecuteResult,
   BatchStatement,
@@ -219,12 +218,12 @@ import type {
   SyncStatus,
   PowerSyncConfig,
   ConnectOptions,
-} from "@despia-native/powersync";
+} from "@despia/powersync";
 ```
 
-- **`db: Database`**: singleton instance
-- **`Database`**: class (create your own instance if you want)
-- **`onEvent<T>(event: string, callback: (payload: T) => void): () => void`**: subscribe to native events
+- `**db: Database**`: singleton instance
+- `**Database**`: class (create your own instance if you want)
+- `**onEvent<T>(event: string, callback: (payload: T) => void): () => void**`: subscribe to native events
 
 ### `Database` class
 
@@ -395,7 +394,7 @@ disconnect(): Promise<Record<string, unknown>>;
 
 Subscribe with `onEvent(event, callback)`:
 
-- **`sync:status`** → payload: `SyncStatus`
-- **`sync:token_needed`** → payload: `unknown` (token refresh is handled internally by `connect()`)
-- **`watch:<watchId>`** → payload: `unknown` (rows array; typed via `watch<T>()`)
+- `**sync:status`** → payload: `SyncStatus`
+- `**sync:token_needed**` → payload: `unknown` (token refresh is handled internally by `connect()`)
+- `**watch:<watchId>**` → payload: `unknown` (rows array; typed via `watch<T>()`)
 

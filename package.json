@@ -1,5 +1,5 @@
 {
-  "name": "@despia-native/powersync",
+  "name": "@despia/powersync",
   "version": "0.1.0",
   "description": "SQLite + PowerSync bridge for Despia native apps",
   "author": "Despia",
