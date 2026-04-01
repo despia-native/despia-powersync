@@ -67,6 +67,8 @@
     "dev": "npx tsup --watch",
     "typecheck": "npx tsc --noEmit",
     "prepublishOnly": "npm run typecheck && npm run build",
+    "release:pack": "npm pkg fix && npm run typecheck && npm run build && npm pack --dry-run",
+    "release:npm": "npm publish --access public",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
