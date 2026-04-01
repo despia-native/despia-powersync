@@ -62,7 +62,6 @@ await db.connect({
     return "YOUR_JWT";
   },
   url: "https://YOUR_POWERSYNC_INSTANCE",
-  appId: "YOUR_APP_ID",
 });
 ```
 
@@ -197,14 +196,11 @@ export type SyncStatus = {
 export type PowerSyncConfig = {
   url?: string;
   token: string;
-  appId?: string;
-  uploadDebounce?: number;
 };
 
 export type ConnectOptions = {
   fetchToken: () => Promise<string>;
   url?: string;
-  appId?: string;
 };
 ```
 

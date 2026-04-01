@@ -38,8 +38,8 @@ function isSyncStatus(value: unknown): value is SyncStatus {
 }
 
 class Database {
-  private fetchTokenFn: ConnectOptions["fetchToken"] | null = null;
-  private tokenRefreshUnsub: (() => void) | null = null;
+  private _fetchToken: ConnectOptions["fetchToken"] | null = null;
+  private _tokenRefreshUnsub: (() => void) | null = null;
 
   async query<T extends Row = Row>(sql: string, params: unknown[] = []): Promise<T[]> {
     const result = await send({ action: "query", sql, params });
@@ -145,21 +145,21 @@ class Database {
   }
 
   async connect(options: Partial<ConnectOptions> = {}): Promise<void> {
-    const { fetchToken, url, appId } = options;
+    const { fetchToken, url } = options;
 
     if (typeof fetchToken !== "function") {
       throw new Error("connect() requires a fetchToken function that returns a JWT");
     }
 
-    this.fetchTokenFn = fetchToken;
+    this._fetchToken = fetchToken;
 
     const token = await fetchToken();
-    await this.configurePowerSync({ url, appId, token });
+    await this.configurePowerSync({ url, token });
 
-    this.tokenRefreshUnsub?.();
-    this.tokenRefreshUnsub = onEvent("sync:token_needed", async () => {
+    this._tokenRefreshUnsub?.();
+    this._tokenRefreshUnsub = onEvent("sync:token_needed", async () => {
       try {
-        const fn = this.fetchTokenFn;
+        const fn = this._fetchToken;
         if (!fn) return;
         const newToken = await fn();
         await send({ action: "sync", op: "refresh_token", token: newToken });
@@ -170,9 +170,9 @@ class Database {
   }
 
   async disconnect(): Promise<Record<string, unknown>> {
-    this.tokenRefreshUnsub?.();
-    this.tokenRefreshUnsub = null;
-    this.fetchTokenFn = null;
+    this._tokenRefreshUnsub?.();
+    this._tokenRefreshUnsub = null;
+    this._fetchToken = null;
     return send({ action: "sync", op: "disconnect" });
   }
 }

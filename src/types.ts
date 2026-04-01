@@ -49,23 +49,17 @@ export interface SyncStatus {
 }
 
 export interface PowerSyncConfig {
-  /** PowerSync instance URL (optional if set in native Config) */
+  /** Full PowerSync instance URL (optional if set in native Config) */
   url?: string;
   /** JWT token for authentication */
   token: string;
-  /** App identifier / audience (optional if set in native Config) */
-  appId?: string;
-  /** Debounce interval in ms for upload (default: 100) */
-  uploadDebounce?: number;
 }
 
 export interface ConnectOptions {
   /** Async function that returns a JWT string from your backend */
   fetchToken: () => Promise<string>;
-  /** PowerSync instance URL (optional if set in native Config) */
+  /** Full PowerSync instance URL (optional if set in native Config) */
   url?: string;
-  /** App identifier / audience (optional if set in native Config) */
-  appId?: string;
 }
 
 // ── Window augmentation ─────────────────────────────────────

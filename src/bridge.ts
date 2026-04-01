@@ -65,7 +65,8 @@ function receive(raw: string | BridgeResponse | BridgeEvent): void {
   if (!isBridgeResponse(response)) return;
   if (response.sdk !== SDK_NAME) return;
 
-  const { rid, error, ...data } = response;
+  const { rid, sdk: _sdk, error, ...data } = response;
+  void _sdk;
   const handler = pending.get(rid);
   if (!handler) return;
 
