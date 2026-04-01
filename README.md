@@ -39,7 +39,7 @@ Despia's Local Server downloads and caches web content (HTML, CSS, JavaScript) f
 Install:
 
 ```bash
-npm i @despia/powersync
+npm install @despia/powersync
 ```
 
 Query your local DB:
