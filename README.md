@@ -249,5 +249,5 @@ Subscribe with `onEvent(event, callback)`:
 
 - `sync:status` → `SyncStatus`
 - `sync:token_needed` → `unknown` (handled internally by `connect()`)
-- `watch:<watchId>` → rows payload (typed via `watch<T>()`)
+- `watch:` + id → rows payload (see `watch()` overloads above)
 
