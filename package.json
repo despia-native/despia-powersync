@@ -1,0 +1,73 @@
+{
+  "name": "@despia-native/powersync",
+  "version": "0.1.0",
+  "description": "SQLite + PowerSync bridge for Despia native apps",
+  "author": "Despia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/despia-native/despia-powersync"
+  },
+  "homepage": "https://github.com/despia-native/despia-powersync#readme",
+  "bugs": {
+    "url": "https://github.com/despia-native/despia-powersync/issues"
+  },
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "browser": "./dist/esm/index.mjs",
+  "unpkg": "./dist/umd/despia-powersync.min.js",
+  "jsdelivr": "./dist/umd/despia-powersync.min.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./powersync.js": {
+      "types": "./dist/types/index.d.ts",
+      "default": "./dist/esm/powersync.js"
+    },
+    "./umd": {
+      "default": "./dist/umd/despia-powersync.min.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "despia",
+    "sqlite",
+    "powersync",
+    "offline-first",
+    "local-database",
+    "webview",
+    "native-bridge"
+  ],
+  "scripts": {
+    "build": "npx tsup && npx tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist/types",
+    "dev": "npx tsup --watch",
+    "typecheck": "npx tsc --noEmit",
+    "prepublishOnly": "npm run typecheck && npm run build",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}
+
