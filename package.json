@@ -1,7 +1,7 @@
 {
   "name": "@despia/powersync",
   "version": "1.0.0",
-  "description": "SQLite + PowerSync bridge for Despia native apps",
+  "description": "Offline-first native SQLite + real-time sync (PowerSync) for Despia V4 apps",
   "author": "Despia",
   "license": "MIT",
   "repository": {
