@@ -1,7 +1,7 @@
 {
   "name": "@despia/powersync",
   "version": "1.0.0",
-  "description": "Offline-first native SQLite + real-time sync (PowerSync) for Despia V4 apps",
+  "description": "Despia Native SDK for offline-first local SQLite + real-time PowerSync sync in web-native apps",
   "author": "Despia",
   "license": "MIT",
   "repository": {
@@ -51,8 +51,12 @@
   },
   "keywords": [
     "despia",
+    "despia-native",
+    "web-native",
     "sqlite",
     "powersync",
+    "sync",
+    "realtime",
     "offline-first",
     "local-database",
     "webview",
