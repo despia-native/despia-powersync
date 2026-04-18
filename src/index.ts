@@ -7,5 +7,8 @@ export type {
   SyncStatus,
   PowerSyncConfig,
   ConnectOptions,
+  PowerSyncColumnType,
+  PowerSyncTableSchema,
+  PowerSyncSchema,
 } from "./types";
 

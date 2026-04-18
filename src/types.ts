@@ -48,6 +48,17 @@ export interface SyncStatus {
   downloading: boolean;
 }
 
+export type PowerSyncColumnType = "text" | "integer" | "real";
+
+export interface PowerSyncTableSchema {
+  columns: Record<string, PowerSyncColumnType>;
+  /** Optional index name → ordered column names (native builders handle these) */
+  indexes?: Record<string, string[]>;
+}
+
+/** Table name → table definition (JSON passed to native `sync:init`) */
+export type PowerSyncSchema = Record<string, PowerSyncTableSchema>;
+
 export interface PowerSyncConfig {
   /** Full PowerSync instance URL (optional if set in native Config) */
   url?: string;
@@ -58,8 +69,10 @@ export interface PowerSyncConfig {
 export interface ConnectOptions {
   /** Async function that returns a JWT string from your backend */
   fetchToken: () => Promise<string>;
-  /** Full PowerSync instance URL (optional if set in native Config) */
-  url?: string;
+  /** Full PowerSync instance URL */
+  url: string;
+  /** At least one table with `columns` (types: text, integer, real) */
+  schema: PowerSyncSchema;
 }
 
 // ── Window augmentation ─────────────────────────────────────

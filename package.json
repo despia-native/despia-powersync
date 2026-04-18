@@ -1,6 +1,6 @@
 {
   "name": "@despia/powersync",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Despia Native SDK for offline-first local SQLite + real-time PowerSync sync in web-native apps",
   "author": "Despia",
   "license": "MIT",

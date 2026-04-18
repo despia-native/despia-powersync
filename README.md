@@ -62,6 +62,14 @@ await db.connect({
     return "YOUR_JWT";
   },
   url: "https://YOUR_POWERSYNC_INSTANCE",
+  schema: {
+    users: {
+      columns: {
+        id: "integer",
+        email: "text",
+      },
+    },
+  },
 });
 ```
 
@@ -198,9 +206,18 @@ export type PowerSyncConfig = {
   token: string;
 };
 
+export type PowerSyncSchema = Record<
+  string,
+  {
+    columns: Record<string, "text" | "integer" | "real">;
+    indexes?: Record<string, string[]>;
+  }
+>;
+
 export type ConnectOptions = {
   fetchToken: () => Promise<string>;
-  url?: string;
+  url: string;
+  schema: PowerSyncSchema;
 };
 ```
 
