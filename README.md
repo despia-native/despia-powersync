@@ -1,84 +1,104 @@
-# @despia/powersync
+# Despia PowerSync
 
-Despia PowerSync SDK.
+### Local SQLite in hybrid mobile apps using the Despia Native Runtime
 
-Add a fast, offline-first **native local database** to your Despia app, then keep it in real time sync with your backend through [PowerSync](https://powersync.com/), using a simple JavaScript API.
+Instant local reads and writes inside your existing web codebase, backed by a native SQLite database running in the Despia WebView shell. Your UI stays fast, offline-first, and durable — without rewriting your app in Swift/Kotlin.
 
-- Powered by **PowerSync**: a production-proven sync engine for offline-first apps.
+[![npm](https://img.shields.io/npm/v/@despia/powersync)](https://www.npmjs.com/package/@despia/powersync)
+[![license](https://img.shields.io/npm/l/@despia/powersync)](LICENSE)
+[![source](https://img.shields.io/badge/source-GitHub-181717?logo=github)](https://github.com/despia-native/despia-powersync)
 
-- Despia runtime overview: [Despia docs](https://setup.despia.com/introduction)
-- Despia native features SDK: [`despia-native` on npm](https://www.npmjs.com/package/despia-native)
-- GitHub project: [`despia-native/despia-powersync`](https://github.com/despia-native/despia-powersync)
+**[Learn about Despia Native](https://setup.despia.com/introduction)** · **[Source on GitHub](https://github.com/despia-native/despia-powersync)**
+
+### Why this exists
+
+Web apps are productive — but “fast + offline + durable” on mobile is hard in a browser sandbox. You can use IndexedDB and hope for the best, or you can run a real native database and bridge to it.
+
+**Despia Native fixes this.** Your web code runs inside a native iOS/Android runtime. `@despia/powersync` is the typed JavaScript bridge to the native database (SQLite) and sync primitives.
+
+### What you get
+
+| | |
+| --- | --- |
+| **Local-first SQLite** | Query and write instantly. Works offline by default. |
+| **Live queries** | Subscribe to result sets via `watch()` and update UI in real time. |
+| **TypeScript-first** | Strict types, no `any`, clean `.d.ts` output. |
+| **Framework-agnostic** | Works with React / Vue / Angular / Svelte / vanilla JS. |
+| **CDN-friendly** | ESM + UMD builds for jsDelivr / `<script>` usage. |
 
 ---
 
-## Why this exists
+## Table of Contents
 
-Despia apps run your existing web app inside a native Swift (iOS) and Kotlin (Android) runtime. This package bridges your web code to a native SQLite database plus sync engine, so your app stays instant and usable even when the network is unreliable.
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Runtime detection](#runtime-detection)
+- [Usage](#usage)
+- [Common patterns](#common-patterns)
+- [API reference](#api-reference)
+- [License](#license)
 
-## Features
+---
 
-- **Local-first SQLite**: query and write instantly, even offline.
-- **Sync lifecycle API**: configure, connect, trigger sync, read sync status.
-- **Live queries**: subscribe to result sets via `watch()`.
-- **TypeScript-first**: built-in types, strict API, works great in modern web tooling.
-- **Framework-agnostic**: works with React / Vue / Angular / Svelte / vanilla JS.
-- **Works with Despia Local Server**: compatible with both Remote Hydration and `http://localhost`.
+## Requirements
 
-## Store compliant
+- The app must run inside the **Despia Native Runtime** (iOS/Android WebView shell).
+- Outside Despia (desktop browser, SSR, etc), DB calls reject because the native bridge is not present.
 
-Despia's Local Server downloads and caches web content (HTML, CSS, JavaScript) for offline display in a WebView, the same way browsers cache pages. No native code or executables are downloaded. Learn more about the Despia runtime model in the [Despia docs](https://setup.despia.com/introduction).
+Bridge availability is detected by **feature detection**, not UA sniffing:
+
+```js
+const ok = !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec);
+```
+
+---
+
+## Installation
+
+```bash
+npm install @despia/powersync
+# pnpm add @despia/powersync
+# yarn add @despia/powersync
+```
+
+```ts
+import { db } from "@despia/powersync";
+```
+
+> CDN alternative: `https://cdn.jsdelivr.net/npm/@despia/powersync/+esm` (ESM) or `https://cdn.jsdelivr.net/npm/@despia/powersync/dist/umd/despia-powersync.min.js` (UMD, global `DespiaPowerSync`)
 
 ---
 
 ## Quick start
 
-Install:
-
-```bash
-npm install @despia/powersync
-```
-
-Query your local DB:
-
 ```ts
 import { db } from "@despia/powersync";
 
 type User = { id: number; email: string };
+
 const users = await db.query<User>("SELECT id, email FROM users");
+await db.execute("INSERT INTO users(email) VALUES(?)", ["a@b.com"]);
 ```
 
-Connect (optional):
+**No init call required** when the host Despia app auto-initialises the database on `attach()`.
+
+`connect()` is optional and only exists to provide a `fetchToken()` callback if/when native emits `sync:token_needed` (future sync wiring):
 
 ```ts
-import { db } from "@despia/powersync";
-
-// If your Despia app initializes PowerSync in native (auto-init on attach),
-// you can skip connect() entirely.
-//
-// connect() is only for providing a fetchToken() callback used if/when native
-// requests a token refresh event.
 await db.connect({
   fetchToken: async () => "YOUR_JWT",
 });
 ```
 
-Trigger sync + read status:
-
-```ts
-await db.sync();
-const status = await db.syncStatus();
-console.log(status);
-```
-
 ---
 
-## Runtime requirements
-
-This package only works inside the **Despia runtime** (native bridge required). In a regular browser it will throw.
+## Runtime detection
 
 ```ts
-export const isDespia = () => navigator.userAgent.includes("despia");
+export function isDespiaPowerSyncAvailable(): boolean {
+  return !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec);
+}
 ```
 
 ---
@@ -93,15 +113,8 @@ import { db } from "@despia/powersync";
 
 ### ESM via CDN (jsDelivr)
 
-Use a **module script** in your HTML, then:
-
 ```js
-// Recommended (+esm rewrites dependencies for browsers)
 import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
-
-// Or direct file (same build as npm dist/esm/index.mjs)
-// import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/dist/esm/index.mjs";
-
 const rows = await db.query("SELECT 1");
 console.log(rows);
 ```
@@ -114,33 +127,18 @@ const { db } = require("@despia/powersync");
 
 ### UMD via CDN (global)
 
-Load the bundle URL in a regular (non-module) script tag, then use the global:
-
-**Bundle:** `https://cdn.jsdelivr.net/npm/@despia/powersync/dist/umd/despia-powersync.min.js`
-
 ```js
-// window.DespiaPowerSync exposes { db, Database, onEvent }
 const { db } = window.DespiaPowerSync;
-```
-
-### ESM snippet (same CDN as above)
-
-```js
-import { db } from "https://cdn.jsdelivr.net/npm/@despia/powersync/+esm";
-const rows = await db.query("SELECT 1");
-console.log(rows);
 ```
 
 ---
 
 ## Common patterns
 
-### Write data (execute / batch / transaction)
+### Batch + transaction
 
 ```ts
 import { db } from "@despia/powersync";
-
-await db.execute("INSERT INTO users(email) VALUES(?)", ["a@b.com"]);
 
 await db.batch([
   { sql: "INSERT INTO users(email) VALUES(?)", params: ["a@b.com"] },
@@ -163,7 +161,6 @@ const unwatch = db.watch<Todo>("SELECT id, title, done FROM todos", (rows) => {
   console.log("todos:", rows);
 });
 
-// later:
 unwatch();
 ```
 
@@ -177,74 +174,15 @@ unwatch();
 - `Database`: class
 - `onEvent(event, callback)`: subscribe to native events
 
-### Types
-
-```ts
-export type ExecuteResult = { rowsAffected: number; insertId?: number };
-export type BatchStatement = { sql: string; params?: unknown[] };
-export type BatchResult = { results: ExecuteResult[] };
-
-export type SyncStatus = {
-  connected: boolean;
-  lastSynced: string | null;
-  uploading: boolean;
-  downloading: boolean;
-};
-
-export type PowerSyncConfig = {
-  url?: string;
-  token: string;
-};
-
-export type ConnectOptions = {
-  fetchToken: () => Promise<string>;
-};
-```
-
-### `Database` methods (signatures)
-
-```ts
-query<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  params?: unknown[]
-): Promise<T[]>;
-
-get<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  params?: unknown[]
-): Promise<T | null>;
-
-execute(sql: string, params?: unknown[]): Promise<ExecuteResult>;
-batch(statements: BatchStatement[]): Promise<BatchResult>;
-
-transaction<T>(fn: (db: Database) => Promise<T>): Promise<T>;
-
-watch<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  callback: (rows: T[]) => void
-): () => void;
-watch<T extends Record<string, unknown> = Record<string, unknown>>(
-  sql: string,
-  params: unknown[],
-  callback: (rows: T[]) => void
-): () => void;
-
-migrate(version: number, statements: BatchStatement[]): Promise<Record<string, unknown>>;
-
-configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>>;
-connect(options?: Partial<ConnectOptions>): Promise<void>;
-disconnect(): Promise<Record<string, unknown>>;
-
-sync(): Promise<Record<string, unknown>>;
-syncStatus(): Promise<SyncStatus>;
-onSyncChange(callback: (status: SyncStatus) => void): () => void;
-```
-
 ### Events
 
-Subscribe with `onEvent(event, callback)`:
-
 - `sync:status` → `SyncStatus`
-- `sync:token_needed` → `unknown` (handled internally by `connect()`)
-- `watch:` + id → rows payload (see `watch()` overloads above)
+- `sync:token_needed` → `unknown` (handled by `connect()` if you provide `fetchToken`)
+- `watch:` + id → rows payload (typed by `watch<T>()`)
+
+---
+
+## License
+
+MIT
 
