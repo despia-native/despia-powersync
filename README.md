@@ -174,6 +174,45 @@ unwatch();
 - `db`: singleton `Database`
 - `Database`: class
 - `onEvent(event, callback)`: subscribe to native events
+- `isDespiaPowerSyncAvailable()`: returns `true` when the native bridge is present (best effort)
+
+### Database methods
+
+```ts
+// Read
+db.query<T>(sql: string, params?: unknown[]): Promise<T[]>;
+db.get<T>(sql: string, params?: unknown[]): Promise<T | null>;
+
+// Write
+db.execute(sql: string, params?: unknown[]): Promise<ExecuteResult>;
+db.batch(statements: BatchStatement[]): Promise<BatchResult>;
+db.transaction<T>(fn: (tx: Database) => Promise<T>): Promise<T>;
+
+// Live queries
+db.watch<T>(sql: string, callback: (rows: T[]) => void): () => void;
+db.watch<T>(sql: string, params: unknown[], callback: (rows: T[]) => void): () => void;
+
+// Migrations
+db.migrate(version: number, statements: BatchStatement[]): Promise<Record<string, unknown>>;
+
+// Sync (native dependent)
+db.sync(): Promise<Record<string, unknown>>;
+db.syncStatus(): Promise<SyncStatus>;
+db.onSyncChange(callback: (status: SyncStatus) => void): () => void;
+
+// Optional auth hook (future sync wiring)
+db.connect(options?: { fetchToken: () => Promise<string> }): Promise<void>;
+db.disconnect(): Promise<Record<string, unknown>>;
+
+// Low-level sync config hook (native dependent)
+db.configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>>;
+```
+
+### `onEvent()`
+
+```ts
+onEvent<T = unknown>(event: string, callback: (payload: T) => void): () => void;
+```
 
 ### Events
 
