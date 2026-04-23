@@ -1,8 +1,8 @@
 # Despia PowerSync
 
-### Local-first SQLite with PowerSync sync, from your web code
+### Real native SQLite with cloud sync, from your web code
 
-Fast local reads and writes backed by native SQLite, plus optional sync with PowerSync. Designed for Despia apps so you can ship offline-first features without rewriting your web codebase.
+Fast local reads and writes backed by a real native SQLite database, plus optional cloud sync with PowerSync. You keep your web app codebase, and get native database power where it matters.
 
 [![npm](https://img.shields.io/npm/v/@despia/powersync)](https://www.npmjs.com/package/@despia/powersync)
 [![license](https://img.shields.io/npm/l/@despia/powersync)](LICENSE)
@@ -12,7 +12,7 @@ Fast local reads and writes backed by native SQLite, plus optional sync with Pow
 
 ### Why this exists
 
-Offline-first apps need a real local database. This package gives your web code a typed API for native SQLite, and exposes PowerSync sync hooks for keeping local data in sync with your backend.
+Offline-first apps need a real local database. This package gives your web code a typed API for a native SQLite database, and cloud sync hooks via PowerSync so local data can stay in sync with your backend.
 
 ### What you get
 
