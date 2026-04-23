@@ -46,10 +46,10 @@ Web apps are productive — but “fast + offline + durable” on mobile is hard
 - The app must run inside the **Despia Native Runtime** (iOS/Android WebView shell).
 - Outside Despia (desktop browser, SSR, etc), DB calls reject because the native bridge is not present.
 
-Bridge availability is detected by **feature detection**, not UA sniffing:
+For simplicity, we recommend a UA-based check in app code:
 
 ```js
-const ok = !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec);
+const ok = navigator.userAgent.toLowerCase().includes("despia");
 ```
 
 ---
@@ -97,7 +97,7 @@ await db.connect({
 
 ```ts
 export function isDespiaPowerSyncAvailable(): boolean {
-  return !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec);
+  return navigator.userAgent.toLowerCase().includes("despia");
 }
 ```
 
