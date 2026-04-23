@@ -1,8 +1,8 @@
 # Despia PowerSync
 
-### Local SQLite in hybrid mobile apps with Despia
+### Local-first SQLite with PowerSync sync, from your web code
 
-Instant local reads and writes inside your existing web codebase, backed by a native SQLite database, with optional real time sync via PowerSync. Your UI stays fast, offline-first, and durable without rewriting your app in Swift/Kotlin.
+Fast local reads and writes backed by native SQLite, plus optional sync with PowerSync. Designed for Despia apps so you can ship offline-first features without rewriting your web codebase.
 
 [![npm](https://img.shields.io/npm/v/@despia/powersync)](https://www.npmjs.com/package/@despia/powersync)
 [![license](https://img.shields.io/npm/l/@despia/powersync)](LICENSE)
@@ -12,9 +12,7 @@ Instant local reads and writes inside your existing web codebase, backed by a na
 
 ### Why this exists
 
-Web apps are productive, but "fast + offline + durable" on mobile is hard in a browser sandbox. You can use IndexedDB and hope for the best, or you can run a real native database and bridge to it.
-
-**Despia Native fixes this.** `@despia/powersync` is the typed JavaScript bridge from your web code to a native SQLite database plus PowerSync sync primitives.
+Offline-first apps need a real local database. This package gives your web code a typed API for native SQLite, and exposes PowerSync sync hooks for keeping local data in sync with your backend.
 
 ### What you get
 
@@ -34,7 +32,6 @@ Web apps are productive, but "fast + offline + durable" on mobile is hard in a b
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Quick start](#quick-start)
-- [Runtime detection](#runtime-detection)
 - [Usage](#usage)
 - [Common patterns](#common-patterns)
 - [API reference](#api-reference)
@@ -44,10 +41,10 @@ Web apps are productive, but "fast + offline + durable" on mobile is hard in a b
 
 ## Requirements
 
-- The app must run inside a **Despia app** (where the native bridge is present).
-- Outside Despia (desktop browser, SSR, etc), DB calls reject because the native bridge is not present.
+- The app must run inside a Despia app where the native PowerSync bridge is present.
+- In a normal browser, DB calls fail because the native bridge is not available.
 
-Runtime check:
+Runtime guard:
 
 ```js
 import { isDespiaPowerSyncAvailable } from "@despia/powersync";
@@ -84,17 +81,7 @@ const users = await db.query<User>("SELECT id, email FROM users");
 await db.execute("INSERT INTO users(email) VALUES(?)", ["a@b.com"]);
 ```
 
-**No init call required** when the host Despia app auto-initialises the database on `attach()`.
-
-No init call required. If the native bridge is present, you can query immediately.
-
----
-
-## Runtime detection
-
-```ts
-import { isDespiaPowerSyncAvailable } from "@despia/powersync";
-```
+No init call required. If the bridge is present, you can query immediately.
 
 ---
 
@@ -167,8 +154,8 @@ unwatch();
 
 - `db`: singleton `Database`
 - `Database`: class
-- `onEvent(event, callback)`: subscribe to native events
-- `isDespiaPowerSyncAvailable()`: returns `true` when the native bridge is present (best effort)
+- `onEvent(event, callback)`: subscribe to PowerSync events
+- `isDespiaPowerSyncAvailable()`: check bridge availability
 
 ### Database methods
 
@@ -203,11 +190,6 @@ db.configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>>
 ```ts
 onEvent<T = unknown>(event: string, callback: (payload: T) => void): () => void;
 ```
-
-### Events
-
-- `sync:status` → `SyncStatus`
-- `watch:` + id → rows payload (typed by `watch<T>()`)
 
 ---
 
