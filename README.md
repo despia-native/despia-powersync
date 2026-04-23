@@ -51,25 +51,18 @@ type User = { id: number; email: string };
 const users = await db.query<User>("SELECT id, email FROM users");
 ```
 
-Connect sync:
+Connect (optional):
 
 ```ts
 import { db } from "@despia/powersync";
 
+// If your Despia app initializes PowerSync in native (auto-init on attach),
+// you can skip connect() entirely.
+//
+// connect() is only for providing a fetchToken() callback used if/when native
+// requests a token refresh event.
 await db.connect({
-  fetchToken: async () => {
-    // return a JWT from your backend
-    return "YOUR_JWT";
-  },
-  url: "https://YOUR_POWERSYNC_INSTANCE",
-  schema: {
-    users: {
-      columns: {
-        id: "integer",
-        email: "text",
-      },
-    },
-  },
+  fetchToken: async () => "YOUR_JWT",
 });
 ```
 
@@ -206,18 +199,8 @@ export type PowerSyncConfig = {
   token: string;
 };
 
-export type PowerSyncSchema = Record<
-  string,
-  {
-    columns: Record<string, "text" | "integer" | "real">;
-    indexes?: Record<string, string[]>;
-  }
->;
-
 export type ConnectOptions = {
   fetchToken: () => Promise<string>;
-  url: string;
-  schema: PowerSyncSchema;
 };
 ```
 

@@ -5,7 +5,6 @@ import type {
   ConnectOptions,
   ExecuteResult,
   PowerSyncConfig,
-  PowerSyncSchema,
   SyncStatus,
 } from "./types";
 
@@ -36,32 +35,6 @@ function isSyncStatus(value: unknown): value is SyncStatus {
     typeof v.uploading === "boolean" &&
     typeof v.downloading === "boolean"
   );
-}
-
-const VALID_COLUMN_TYPES = new Set(["text", "integer", "real"]);
-
-function validateSchema(schema: PowerSyncSchema): void {
-  for (const [tableName, tableDef] of Object.entries(schema)) {
-    if (
-      !tableDef ||
-      typeof tableDef !== "object" ||
-      !("columns" in tableDef) ||
-      typeof tableDef.columns !== "object" ||
-      tableDef.columns === null
-    ) {
-      throw new Error(
-        `Schema error: table '${tableName}' missing columns object`
-      );
-    }
-    for (const [colName, colType] of Object.entries(tableDef.columns)) {
-      if (!VALID_COLUMN_TYPES.has(colType)) {
-        throw new Error(
-          `Schema error: '${tableName}.${colName}' has unknown type '${colType}'. ` +
-            `Use 'text', 'integer', or 'real'.`
-        );
-      }
-    }
-  }
 }
 
 class Database {
@@ -172,35 +145,15 @@ class Database {
   }
 
   async connect(options: Partial<ConnectOptions> = {}): Promise<void> {
-    const { fetchToken, url, schema } = options;
+    const { fetchToken } = options;
 
     if (typeof fetchToken !== "function") {
       throw new Error("connect() requires a fetchToken function");
     }
-    if (!url || typeof url !== "string") {
-      throw new Error("connect() requires a url");
-    }
-    if (
-      !schema ||
-      typeof schema !== "object" ||
-      Object.keys(schema as object).length === 0
-    ) {
-      throw new Error("connect() requires a schema with at least one table");
-    }
 
     this._fetchToken = fetchToken;
 
-    validateSchema(schema as PowerSyncSchema);
-
-    const token = await fetchToken();
-
-    await send({
-      action: "sync:init",
-      url,
-      token,
-      schema,
-    });
-
+    // Optional: only needed if native sync later requests a token refresh.
     this._tokenRefreshUnsub?.();
     this._tokenRefreshUnsub = onEvent("sync:token_needed", async () => {
       try {

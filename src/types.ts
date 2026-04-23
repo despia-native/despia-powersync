@@ -56,7 +56,7 @@ export interface PowerSyncTableSchema {
   indexes?: Record<string, string[]>;
 }
 
-/** Table name → table definition (JSON passed to native `sync:init`) */
+/** Table name → table definition (JSON schema format used by native builders). */
 export type PowerSyncSchema = Record<string, PowerSyncTableSchema>;
 
 export interface PowerSyncConfig {
@@ -69,10 +69,6 @@ export interface PowerSyncConfig {
 export interface ConnectOptions {
   /** Async function that returns a JWT string from your backend */
   fetchToken: () => Promise<string>;
-  /** Full PowerSync instance URL */
-  url: string;
-  /** At least one table with `columns` (types: text, integer, real) */
-  schema: PowerSyncSchema;
 }
 
 // ── Window augmentation ─────────────────────────────────────
