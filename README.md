@@ -1,8 +1,8 @@
 # Despia PowerSync
 
-### Local SQLite in hybrid mobile apps using the Despia Native Runtime
+### Local SQLite in hybrid mobile apps with Despia
 
-Instant local reads and writes inside your existing web codebase, backed by a native SQLite database running in the Despia WebView shell. Your UI stays fast, offline-first, and durable without rewriting your app in Swift/Kotlin.
+Instant local reads and writes inside your existing web codebase, backed by a native SQLite database available to your app when it runs in Despia. Your UI stays fast, offline-first, and durable without rewriting your app in Swift/Kotlin.
 
 [![npm](https://img.shields.io/npm/v/@despia/powersync)](https://www.npmjs.com/package/@despia/powersync)
 [![license](https://img.shields.io/npm/l/@despia/powersync)](LICENSE)
@@ -14,7 +14,7 @@ Instant local reads and writes inside your existing web codebase, backed by a na
 
 Web apps are productive, but "fast + offline + durable" on mobile is hard in a browser sandbox. You can use IndexedDB and hope for the best, or you can run a real native database and bridge to it.
 
-**Despia Native fixes this.** Your web code runs inside a native iOS/Android runtime. `@despia/powersync` is the typed JavaScript bridge to the native database (SQLite) and sync primitives.
+**Despia Native fixes this.** `@despia/powersync` is the typed JavaScript bridge from your web code to a native SQLite database and sync primitives.
 
 ### What you get
 
@@ -43,7 +43,7 @@ Web apps are productive, but "fast + offline + durable" on mobile is hard in a b
 
 ## Requirements
 
-- The app must run inside the **Despia Native Runtime** (iOS/Android WebView shell).
+- The app must run inside a **Despia app** (where the native bridge is present).
 - Outside Despia (desktop browser, SSR, etc), DB calls reject because the native bridge is not present.
 
 Runtime checks:
