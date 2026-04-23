@@ -1,4 +1,4 @@
-import { send, onEvent } from "./bridge";
+import { isAvailable, send, onEvent } from "./bridge";
 import type {
   BatchResult,
   BatchStatement,
@@ -91,6 +91,13 @@ class Database {
     paramsOrCallback: unknown[] | ((rows: T[]) => void),
     maybeCallback?: (rows: T[]) => void
   ): () => void {
+    if (!isAvailable()) {
+      console.error(
+        "[powersync] watch() called but native bridge is not available."
+      );
+      return () => {};
+    }
+
     let params: unknown[] = [];
     let callback: (rows: T[]) => void;
 

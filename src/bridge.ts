@@ -17,6 +17,14 @@ function isAvailable(): boolean {
   );
 }
 
+function notAvailableError(): Error {
+  return new Error(
+    "PowerSync is not available (native bridge missing). " +
+      "This package only works inside a Despia app. " +
+      "Guard calls with isDespiaPowerSyncAvailable() or feature detection."
+  );
+}
+
 function id(): string {
   return `dq_${++counter}_${Date.now()}`;
 }
@@ -43,11 +51,7 @@ function send(payload: SendPayload): Promise<Record<string, unknown>> {
     }
 
     pending.delete(rid);
-    reject(
-      new Error(
-        "PowerSync native bridge not available. Are you running inside a Despia app?"
-      )
-    );
+    reject(notAvailableError());
   });
 }
 
