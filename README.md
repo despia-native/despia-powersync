@@ -1,8 +1,5 @@
 # @despia/powersync
 
-> **Despia V4 only (beta).** Most Despia apps are still running on **Despia V3**.  
-> To join the V4 beta, email `beta@despia.com`.
-
 Despia PowerSync SDK.
 
 Add a fast, offline-first **native local database** to your Despia app, then keep it in real time sync with your backend through [PowerSync](https://powersync.com/), using a simple JavaScript API.
