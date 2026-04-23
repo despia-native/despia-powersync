@@ -2,7 +2,7 @@
 
 ### Local SQLite in hybrid mobile apps with Despia
 
-Instant local reads and writes inside your existing web codebase, backed by a native SQLite database available to your app when it runs in Despia. Your UI stays fast, offline-first, and durable without rewriting your app in Swift/Kotlin.
+Instant local reads and writes inside your existing web codebase, backed by a native SQLite database, with optional real time sync via PowerSync. Your UI stays fast, offline-first, and durable without rewriting your app in Swift/Kotlin.
 
 [![npm](https://img.shields.io/npm/v/@despia/powersync)](https://www.npmjs.com/package/@despia/powersync)
 [![license](https://img.shields.io/npm/l/@despia/powersync)](LICENSE)
@@ -14,13 +14,14 @@ Instant local reads and writes inside your existing web codebase, backed by a na
 
 Web apps are productive, but "fast + offline + durable" on mobile is hard in a browser sandbox. You can use IndexedDB and hope for the best, or you can run a real native database and bridge to it.
 
-**Despia Native fixes this.** `@despia/powersync` is the typed JavaScript bridge from your web code to a native SQLite database and sync primitives.
+**Despia Native fixes this.** `@despia/powersync` is the typed JavaScript bridge from your web code to a native SQLite database plus PowerSync sync primitives.
 
 ### What you get
 
 | | |
 | --- | --- |
 | **Local-first SQLite** | Query and write instantly. Works offline by default. |
+| **Sync with PowerSync** | Wire up cloud sync using PowerSync. Local reads and writes stay instant. |
 | **Live queries** | Subscribe to result sets via `watch()` and update UI in real time. |
 | **TypeScript-first** | Strict types, no `any`, clean `.d.ts` output. |
 | **Framework-agnostic** | Works with React / Vue / Angular / Svelte / vanilla JS. |
