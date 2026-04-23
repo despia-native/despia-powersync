@@ -55,9 +55,9 @@ If you want more native capabilities from the same web codebase (in-app purchase
 Runtime guard:
 
 ```js
-import { isDespiaPowerSyncAvailable } from "@despia/powersync";
+import { active } from "@despia/powersync";
 
-const ok = isDespiaPowerSyncAvailable();
+const ok = active();
 ```
 
 ---
@@ -161,8 +161,7 @@ unwatch();
 - `db`: singleton `Database`
 - `Database`: class
 - `onEvent(event, callback)`: subscribe to PowerSync events
-- `isDespiaPowerSyncAvailable()`: check bridge availability
-- `active()`: alias for `isDespiaPowerSyncAvailable()`
+- `active()`: returns `true` when PowerSync is available
 
 ### Database methods
 
