@@ -145,9 +145,7 @@ await db.transaction(async (tx) => {
 ```ts
 import { db } from "@despia/powersync";
 
-type Todo = { id: number; title: string; done: 0 | 1 };
-
-const unwatch = db.watch<Todo>("SELECT id, title, done FROM todos", (rows) => {
+const unwatch = db.watch("SELECT id, title, done FROM todos", (rows) => {
   console.log("todos:", rows);
 });
 
@@ -164,6 +162,7 @@ unwatch();
 - `Database`: class
 - `onEvent(event, callback)`: subscribe to PowerSync events
 - `isDespiaPowerSyncAvailable()`: check bridge availability
+- `active()`: alias for `isDespiaPowerSyncAvailable()`
 
 ### Database methods
 
