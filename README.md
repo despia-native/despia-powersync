@@ -2,7 +2,7 @@
 
 ### Local SQLite in hybrid mobile apps using the Despia Native Runtime
 
-Instant local reads and writes inside your existing web codebase, backed by a native SQLite database running in the Despia WebView shell. Your UI stays fast, offline-first, and durable — without rewriting your app in Swift/Kotlin.
+Instant local reads and writes inside your existing web codebase, backed by a native SQLite database running in the Despia WebView shell. Your UI stays fast, offline-first, and durable without rewriting your app in Swift/Kotlin.
 
 [![npm](https://img.shields.io/npm/v/@despia/powersync)](https://www.npmjs.com/package/@despia/powersync)
 [![license](https://img.shields.io/npm/l/@despia/powersync)](LICENSE)
@@ -12,7 +12,7 @@ Instant local reads and writes inside your existing web codebase, backed by a na
 
 ### Why this exists
 
-Web apps are productive — but “fast + offline + durable” on mobile is hard in a browser sandbox. You can use IndexedDB and hope for the best, or you can run a real native database and bridge to it.
+Web apps are productive, but "fast + offline + durable" on mobile is hard in a browser sandbox. You can use IndexedDB and hope for the best, or you can run a real native database and bridge to it.
 
 **Despia Native fixes this.** Your web code runs inside a native iOS/Android runtime. `@despia/powersync` is the typed JavaScript bridge to the native database (SQLite) and sync primitives.
 
@@ -46,10 +46,15 @@ Web apps are productive — but “fast + offline + durable” on mobile is hard
 - The app must run inside the **Despia Native Runtime** (iOS/Android WebView shell).
 - Outside Despia (desktop browser, SSR, etc), DB calls reject because the native bridge is not present.
 
-For simplicity, we recommend a UA-based check in app code:
+Runtime checks:
+
+- **Recommended (authoritative)**: feature-detect the native bridge (works even if the UA is changed).
+- **Optional (best-effort)**: UA string contains `despia` (not authoritative).
 
 ```js
-const ok = navigator.userAgent.toLowerCase().includes("despia");
+const ok =
+  !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec) ||
+  navigator.userAgent.toLowerCase().includes("despia"); // best-effort hint only
 ```
 
 ---
@@ -97,7 +102,7 @@ await db.connect({
 
 ```ts
 export function isDespiaPowerSyncAvailable(): boolean {
-  return navigator.userAgent.toLowerCase().includes("despia");
+  return !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec);
 }
 ```
 
