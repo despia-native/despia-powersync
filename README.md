@@ -29,6 +29,10 @@ Offline-first apps need a real local database. This package gives your web code 
 
 For a complete offline-first app (your web UI cached offline plus a local database), pair this with Despia Local Server: [`@despia/local`](https://www.npmjs.com/package/@despia/local).
 
+### More native features
+
+If you want more native capabilities from the same web codebase (in-app purchases, iCloud key-value storage, Android key-value backups, and more), use [`despia-native`](https://www.npmjs.com/package/despia-native). It is cross-platform and framework-agnostic.
+
 ---
 
 ## Table of Contents
