@@ -25,6 +25,10 @@ Offline-first apps need a real local database. This package gives your web code 
 | **Framework-agnostic** | Works with React / Vue / Angular / Svelte / vanilla JS. |
 | **CDN-friendly** | ESM + UMD builds for jsDelivr / `<script>` usage. |
 
+### Offline app note
+
+For a complete offline-first app (your web UI cached offline plus a local database), pair this with Despia Local Server: [`@despia/local`](https://www.npmjs.com/package/@despia/local).
+
 ---
 
 ## Table of Contents
