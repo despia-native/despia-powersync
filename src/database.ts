@@ -1,8 +1,7 @@
-import { isAvailable, send, onEvent } from "./bridge";
+import { isAvailable, onEvent, send } from "./bridge";
 import type {
   BatchResult,
   BatchStatement,
-  ConnectOptions,
   ExecuteResult,
   PowerSyncConfig,
   SyncStatus,
@@ -38,9 +37,6 @@ function isSyncStatus(value: unknown): value is SyncStatus {
 }
 
 class Database {
-  private _fetchToken: ConnectOptions["fetchToken"] | null = null;
-  private _tokenRefreshUnsub: (() => void) | null = null;
-
   async query<T extends Row = Row>(sql: string, params: unknown[] = []): Promise<T[]> {
     const result = await send({ action: "query", sql, params });
     const rows = result.rows;
@@ -149,36 +145,6 @@ class Database {
 
   async configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>> {
     return send({ action: "sync", op: "configure", config });
-  }
-
-  async connect(options: Partial<ConnectOptions> = {}): Promise<void> {
-    const { fetchToken } = options;
-
-    if (typeof fetchToken !== "function") {
-      throw new Error("connect() requires a fetchToken function");
-    }
-
-    this._fetchToken = fetchToken;
-
-    // Optional: only needed if native sync later requests a token refresh.
-    this._tokenRefreshUnsub?.();
-    this._tokenRefreshUnsub = onEvent("sync:token_needed", async () => {
-      try {
-        const fn = this._fetchToken;
-        if (!fn) return;
-        const newToken = await fn();
-        await send({ action: "sync", op: "refresh_token", token: newToken });
-      } catch (err) {
-        console.error("[powersync] token refresh failed:", err);
-      }
-    });
-  }
-
-  async disconnect(): Promise<Record<string, unknown>> {
-    this._tokenRefreshUnsub?.();
-    this._tokenRefreshUnsub = null;
-    this._fetchToken = null;
-    return send({ action: "sync", op: "disconnect" });
   }
 }
 

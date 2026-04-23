@@ -6,7 +6,6 @@ export type {
   BatchResult,
   SyncStatus,
   PowerSyncConfig,
-  ConnectOptions,
   PowerSyncColumnType,
   PowerSyncTableSchema,
   PowerSyncSchema,

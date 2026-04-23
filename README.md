@@ -86,13 +86,7 @@ await db.execute("INSERT INTO users(email) VALUES(?)", ["a@b.com"]);
 
 **No init call required** when the host Despia app auto-initialises the database on `attach()`.
 
-`connect()` is optional and only exists to provide a `fetchToken()` callback if/when native emits `sync:token_needed` (future sync wiring):
-
-```ts
-await db.connect({
-  fetchToken: async () => "YOUR_JWT",
-});
-```
+No init call required. If the native bridge is present, you can query immediately.
 
 ---
 
@@ -200,10 +194,6 @@ db.sync(): Promise<Record<string, unknown>>;
 db.syncStatus(): Promise<SyncStatus>;
 db.onSyncChange(callback: (status: SyncStatus) => void): () => void;
 
-// Optional auth hook (future sync wiring)
-db.connect(options?: { fetchToken: () => Promise<string> }): Promise<void>;
-db.disconnect(): Promise<Record<string, unknown>>;
-
 // Low-level sync config hook (native dependent)
 db.configurePowerSync(config: PowerSyncConfig): Promise<Record<string, unknown>>;
 ```
@@ -217,7 +207,6 @@ onEvent<T = unknown>(event: string, callback: (payload: T) => void): () => void;
 ### Events
 
 - `sync:status` → `SyncStatus`
-- `sync:token_needed` → `unknown` (handled by `connect()` if you provide `fetchToken`)
 - `watch:` + id → rows payload (typed by `watch<T>()`)
 
 ---

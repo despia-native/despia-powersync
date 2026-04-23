@@ -66,11 +66,6 @@ export interface PowerSyncConfig {
   token: string;
 }
 
-export interface ConnectOptions {
-  /** Async function that returns a JWT string from your backend */
-  fetchToken: () => Promise<string>;
-}
-
 // ── Window augmentation ─────────────────────────────────────
 
 type BridgeCallback = (raw: string | BridgeResponse | BridgeEvent) => void;
