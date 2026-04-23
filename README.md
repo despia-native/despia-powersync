@@ -52,9 +52,9 @@ Runtime checks:
 - **Optional (best-effort)**: UA string contains `despia` (not authoritative).
 
 ```js
-const ok =
-  !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec) ||
-  navigator.userAgent.toLowerCase().includes("despia"); // best-effort hint only
+import { isDespiaPowerSyncAvailable } from "@despia/powersync";
+
+const ok = isDespiaPowerSyncAvailable();
 ```
 
 ---
@@ -101,9 +101,7 @@ await db.connect({
 ## Runtime detection
 
 ```ts
-export function isDespiaPowerSyncAvailable(): boolean {
-  return !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec);
-}
+import { isDespiaPowerSyncAvailable } from "@despia/powersync";
 ```
 
 ---

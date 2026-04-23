@@ -1,5 +1,5 @@
 export { db, Database } from "./database";
-export { onEvent } from "./bridge";
+export { onEvent, isAvailable as isDespiaPowerSyncAvailable } from "./bridge";
 export type {
   ExecuteResult,
   BatchStatement,

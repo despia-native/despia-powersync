@@ -10,6 +10,13 @@ const SDK_NAME = "powersync";
 const pending = new Map<string, PendingHandler>();
 let counter = 0;
 
+function isAvailable(): boolean {
+  return (
+    !!(window.webkit?.messageHandlers?.powersync || window.PowerSync?.exec) ||
+    navigator.userAgent.toLowerCase().includes("despia")
+  );
+}
+
 function id(): string {
   return `dq_${++counter}_${Date.now()}`;
 }
@@ -139,5 +146,5 @@ if (!window.nativeBridgeEvent) {
 }
 window.nativeBridgeEvent!._handlers.push(handleEvent);
 
-export { send, onEvent };
+export { send, onEvent, isAvailable };
 
