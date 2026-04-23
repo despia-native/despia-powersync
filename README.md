@@ -46,10 +46,7 @@ Web apps are productive, but "fast + offline + durable" on mobile is hard in a b
 - The app must run inside a **Despia app** (where the native bridge is present).
 - Outside Despia (desktop browser, SSR, etc), DB calls reject because the native bridge is not present.
 
-Runtime checks:
-
-- **Recommended (authoritative)**: feature-detect the native bridge (works even if the UA is changed).
-- **Optional (best-effort)**: UA string contains `despia` (not authoritative).
+Runtime check:
 
 ```js
 import { isDespiaPowerSyncAvailable } from "@despia/powersync";
